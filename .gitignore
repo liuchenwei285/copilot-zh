@@ -1,0 +1,21 @@
+# Local run state and captured UI/DOM data. Never publish files from out/.
+/out/*
+
+# Logs, process markers, temporary files and backups
+*.log
+*.pid
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# Common local tooling output
+node_modules/
+.cache/
+coverage/
+.nyc_output/
+.DS_Store
+Thumbs.db
+Desktop.ini

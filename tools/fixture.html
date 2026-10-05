@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Copilot Desktop fixture</title>
+<style>
+  body { font-family: "Segoe UI", system-ui, sans-serif; margin: 0; background: #fff; color: #1f2328; }
+  .app { display: flex; min-height: 100vh; }
+  nav.sidebar { width: 220px; border-right: 1px solid #d1d9e0; padding: 12px; }
+  .nav-item { display: block; width: 100%; text-align: left; padding: 8px 10px; margin: 2px 0; border: 0; background: transparent; border-radius: 6px; font: inherit; cursor: pointer; }
+  .nav-item:hover { background: #eef1f4; }
+  main { flex: 1; padding: 24px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #59636e; margin: 0 0 20px; }
+  .cards { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); }
+  .suggestion-card { border: 1px solid #d1d9e0; border-radius: 10px; padding: 12px; }
+  .chip { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #eef1f4; font-size: 12px; }
+  .composer { margin-top: 24px; }
+  input.composer-input { width: 100%; padding: 12px; border: 1px solid #d1d9e0; border-radius: 10px; font: inherit; }
+  .tiers { display: flex; gap: 8px; margin-top: 12px; }
+  .tier { border: 1px solid #d1d9e0; border-radius: 8px; padding: 8px 12px; background: #fff; font: inherit; cursor: pointer; }
+  .settings { margin-top: 32px; border-top: 1px solid #d1d9e0; padding-top: 16px; }
+  .setting-row { margin-bottom: 14px; }
+  .setting-row .hint { color: #59636e; font-size: 13px; margin: 2px 0 0; }
+  .empty-state { margin-top: 32px; padding: 32px; text-align: center; border: 1px dashed #d1d9e0; border-radius: 10px; color: #59636e; }
+  pre, code { font-family: Consolas, monospace; font-size: 13px; }
+  pre { background: #f6f8fa; padding: 12px; border-radius: 8px; overflow: auto; }
+  .markdown { margin-top: 24px; }
+  .xterm { margin-top: 12px; background: #101418; color: #d5dae1; padding: 10px; border-radius: 8px; font-family: Consolas, monospace; }
+  .diff-view { margin-top: 12px; background: #f6f8fa; padding: 10px; border-radius: 8px; font-family: Consolas, monospace; }
+  .lexical-editor { border: 1px solid #d1d9e0; border-radius: 8px; padding: 10px; min-height: 40px; margin-top: 12px; }
+  .pr-title { font-weight: 500; }
+  .repo-name { color: #59636e; }
+  .section-title { font-size: 14px; font-weight: 500; margin: 28px 0 8px; color: #59636e; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <nav class="sidebar" aria-label="Primary">
+    <button class="nav-item" data-testid="nav-new">New</button>
+    <button class="nav-item" data-testid="nav-pull-requests">Pull requests</button>
+    <button class="nav-item" data-testid="nav-issues">Issues</button>
+    <button class="nav-item" data-testid="nav-automations">Automations</button>
+    <button class="nav-item" data-testid="nav-customize">Customize</button>
+    <button class="nav-item" data-testid="nav-more">More</button>
+    <button class="nav-item" data-testid="nav-projects">Projects</button>
+    <button class="nav-item" data-testid="nav-chats">Chats</button>
+    <button class="nav-item" data-testid="nav-search" aria-label="Search">Search</button>
+  </nav>
+
+  <main>
+    <h1>Get started with one of these project ideas.</h1>
+    <p class="sub">Pick a starting point or describe what you want to build.</p>
+
+    <div class="cards">
+      <div class="suggestion-card">
+        <span class="chip">Interactive</span>
+        <p>Create a space exploration quiz with animated feedback.</p>
+      </div>
+      <div class="suggestion-card">
+        <p>Build a personal landing page with dark mode.</p>
+      </div>
+      <div class="suggestion-card">
+        <p>Build a to-do web app with smooth animations.</p>
+      </div>
+    </div>
+
+    <div class="composer">
+      <input class="composer-input" id="composer" placeholder="Ask anything or paste a URL..." title="Message Copilot">
+      <input class="composer-input" id="repo-filter" placeholder="Filter by repository">
+    </div>
+
+    <div class="section-title">── 以下为词典里没有的 UI 文案，应进入待翻译候选 ──</div>
+    <button class="nav-item" id="gap-btn">Manage repositories</button>
+    <div class="section-title" id="gap-title">Show archived chats</div>
+    <button class="nav-item" id="gap-btn2" title="Reopen the last closed chat">Reopen</button>
+
+    <div class="tiers" id="tiers">
+      <button class="tier" data-tier="efficiency" title="Optimizes for cost and speed, using more capable models only when needed.">Efficiency</button>
+      <button class="tier" data-tier="balance">Balance</button>
+      <button class="tier" data-tier="intelligence">Intelligence</button>
+    </div>
+    <button class="nav-item" id="switch-auto" aria-label="Switch to Auto">Switch to Auto</button>
+
+    <div class="settings" id="settings">
+      <div class="section-title">General</div>
+      <div class="setting-row">
+        <label for="theme">Current theme</label>
+        <p class="hint">Customize the app's color palette.</p>
+        <select id="theme"><option>System</option><option>Light</option><option>Dark</option></select>
+      </div>
+      <div class="setting-row">
+        <label for="loc">Storage location</label>
+        <p class="hint">Where repositories are stored.</p>
+      </div>
+      <div class="setting-row">
+        <label for="login">Start on system start</label>
+      </div>
+      <div class="setting-row">
+        <label for="del">Delete chats without confirmation</label>
+        <p class="hint">Skip the confirmation dialog when deleting chats.</p>
+      </div>
+    </div>
+
+    <div class="empty-state" id="empty">
+      <p>No chats yet</p>
+      <button class="nav-item">Start a new chat</button>
+    </div>
+
+    <div class="section-title">── 以下为受保护内容，必须保持英文原样 ──</div>
+
+    <div class="repo-name">octocat/Hello-World</div>
+    <div class="pr-title" data-testid="pr-title">Fix login redirect loop in OAuth flow</div>
+
+    <div class="markdown" data-message-author-role="assistant">
+      <p>Here is the fix. Save this file and restart the server.</p>
+      <ul><li>Step one: open the config</li><li>Step two: set the flag</li></ul>
+    </div>
+
+    <pre><code>const options = { mode: "New", title: "Search", retry: true };
+console.log("Balance the load");</code></pre>
+
+    <div class="lexical-editor" contenteditable="true" data-lexical-editor="true" id="user-input">Delete this line and write your own prompt</div>
+
+    <div class="xterm"><div>$ npm run build</div><div>Searching for changed files...</div></div>
+
+    <div class="diff-view"><div>- const theme = "Dark";</div><div>+ const theme = "Light";</div></div>
+
+    <div class="section-title">── 对话区（结构照抄真实探测结果：AI 正文 / 用户消息 / 报错必须原样） ──</div>
+
+    <div data-testid="chat-canvas-split-container">
+      <header aria-label="Utility">
+        <h1 class="sr-only">Session: 你好</h1>
+        <button id="sess-options" aria-label="你好, session options">
+          <div data-testid="chat-header-title"><span><span><span id="chat-title-text">你好</span></span></span></div>
+        </button>
+      </header>
+
+      <div data-testid="conversation-root">
+        <div role="scrollbar" aria-label="Conversation timeline"></div>
+        <div role="region" data-testid="conversation-body" aria-label="Conversation transcript">
+          <div data-testid="conversation-recent-activity">
+
+            <div data-testid="conversation-message-row">
+              <div class="[[data-transcript-narrow]_&amp;]:max-w-full">
+                <div data-testid="user-message-bubble">
+                  <h2 class="sr-only">You said: New</h2>
+                  <div><div class="prose" id="user-prose"><p>New</p><p>Search</p></div></div>
+                </div>
+                <div data-testid="user-message-actions">
+                  <span><span><button id="stamp" aria-label="2 hours ago, Sent, show timestamp">2h ago</button></span></span>
+                  <span>
+                    <button id="act-copy-user" aria-label="Copy user message"></button>
+                    <button id="act-edit" aria-label="Edit message"></button>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div data-testid="conversation-message-row">
+              <h2 class="sr-only">Copilot said: New. Customize. Search. More. Balance. Projects. Chats.</h2>
+              <div class="group/reasoning-activity">
+                <div data-testid="model-change-notice">
+                  <button data-testid="model-change-notice-disclosure">
+                    <span></span><span id="model-notice">Model changed to Kimi K3 · NVIDIA NIM</span>
+                  </button>
+                </div>
+                <div>
+                  <div data-testid="assistant-reasoning-progress">
+                    <button data-testid="assistant-reasoning-toggle">
+                      <span></span><span id="thought">Thought for 7s</span>
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <div class="prose" id="asst-prose">
+                    <p>New</p>
+                    <p>Customize</p>
+                    <ul><li>Search</li></ul>
+                  </div>
+                </div>
+                <div>
+                  <button id="act-bookmark" aria-label="Bookmark to timeline"></button>
+                  <button id="act-copy-asst" aria-label="Copy assistant message"></button>
+                  <button id="act-retry" aria-label="Retry"></button>
+                  <button id="act-more" aria-label="More response actions"></button>
+                </div>
+              </div>
+            </div>
+
+            <div data-testid="conversation-message-row">
+              <div class="group/reasoning-activity">
+                <div>
+                  <div data-testid="system-error-row">
+                    <div><span role="alert"><span id="err-text">Model 'moonshotai/kimi-k2.6' not found on provider at (HTTP 404). Check that the model is available on your provider.</span></span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div data-testid="conversation-composer-area">
+          <div>
+            <div>
+              <div class="_renderedContent_zux8b_6">
+                <!-- 真实 DOM 里这个 div[role=textbox] 自带 .prose 类（排版占位符需要），
+                     这正是它被 skipAttr 拦掉的原因，必须如实复现。 -->
+                <div role="textbox" contenteditable="true" id="chat-input"
+                     class="prose prose-sm w-full"
+                     aria-label="Message"
+                     aria-placeholder="Ask anything. Use / for commands or &amp; for sessions…">New Search Customize</div>
+                <div><div><span id="chat-placeholder">Ask anything. Use / for commands or &amp; for sessions…</span></div></div>
+              </div>
+            </div>
+          </div>
+          <button id="btn-send" aria-label="Send message"></button>
+          <button id="btn-dictate" aria-label="Set up voice dictation"></button>
+          <button id="btn-ctx" aria-label="Add context &amp; more"></button>
+          <button id="btn-quota" aria-label="Chat messages quota: 0% used"></button>
+          <button id="btn-scroll-bottom" aria-label="Scroll to bottom"></button>
+          <div aria-label="Typeahead menu" id="typeahead-host"></div>
+        </div>
+      </div>
+
+      <!-- 用量/套餐浮层：真实 DOM 里是 <dt>/<dd> 结构 -->
+      <div data-testid="usage-popover" class="popover">
+        <dl>
+          <dt id="quota-label">Plan</dt>
+          <dd id="quota-value">0% used</dd>
+        </dl>
+        <button id="btn-usage">View usage and plan…</button>
+        <button id="btn-feedback" aria-label="Share feedback, Control + Enter"></button>
+      </div>
+
+      <!-- 反馈对话框 -->
+      <div role="dialog" aria-label="Share feedback" id="feedback-dialog">
+        <span id="fb-title">Report a bug or suggest a feature</span>
+        <textarea id="fb-body" placeholder="What feedback would you like to share?"></textarea>
+        <p id="fb-note">This will be posted as a public GitHub issue.</p>
+        <span id="fb-voice">Open voice settings</span>
+      </div>
+
+      <div data-testid="chat-canvas-panel">
+        <div data-testid="chat-canvas-panel-content">
+          <div class="text-body-small font-mono">New</div>
+          <div>Customize</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">── 动态渲染 / 重渲染测试 ──</div>
+    <div id="dynamic-host"></div>
+    <div id="rerender-host"><button class="nav-item" id="rerender-target">New</button></div>
+  </main>
+</div>
+
+<script>
+  window.__fixture = {
+    mutationCount: 0,
+    addDynamic: function () {
+      var host = document.getElementById('dynamic-host');
+      var d = document.createElement('div');
+      d.innerHTML = '<div class="section-title">Dynamically added</div>' +
+        '<button class="nav-item" id="dyn-btn">Customize</button>' +
+        '<button class="nav-item" id="dyn-btn2" aria-label="Automations">Automations</button>' +
+        '<div class="empty-state"><p>No results found</p></div>';
+      host.appendChild(d);
+      return true;
+    },
+    resetText: function () {
+      document.getElementById('rerender-target').textContent = 'New';
+      return true;
+    },
+    getText: function (sel) {
+      var el = document.querySelector(sel);
+      return el ? el.textContent : null;
+    },
+    /* 一键启用 / 禁用（对应 __ZH__.disable() / enable()） */
+    zhOff: function () { return window.__ZH__ ? window.__ZH__.disable() : null; },
+    zhOn: function () { return window.__ZH__ ? window.__ZH__.enable() : null; }
+  };
+  new MutationObserver(function (muts) { window.__fixture.mutationCount += muts.length; })
+    .observe(document.documentElement, { childList: true, subtree: true, characterData: true, attributes: true });
+</script>
+</body>
+</html>

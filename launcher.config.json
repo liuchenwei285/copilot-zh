@@ -1,0 +1,32 @@
+{
+  "_readme": [
+    "汉化启动器配置。",
+    "",
+    "exe         : 官方 github.exe 的完整路径。留空则按 exeSearch 顺序查找。",
+    "              填了就以它为准（最高优先级，高于 --exe 之外的任何默认值）。",
+    "exeSearch   : 候选路径，按顺序尝试。支持 %LOCALAPPDATA% 这类环境变量。",
+    "              默认候选覆盖当前用户、所有用户等常见安装位置。",
+    "port        : CDP 端口。9222 = 固定端口（--start 与 zh-off 都用它，推荐）。",
+    "              0 = 每次自动挑一个空闲端口（仅前台守护模式生效）。",
+    "lang        : zh-CN = 汉化；en-US = 注入但保持英文（可在控制台 __ZH__.enable() 打开）。",
+    "debug       : true = 输出 CDP/注入状态、未翻译文本、JS 错误到 out/untranslated.json。",
+    "extraBrowserArgs : 追加到 WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS 的额外参数，一般留空。",
+    "",
+    "注意：本文件只影响启动器，不会写入官方安装目录。"
+  ],
+
+  "exe": "",
+
+  "exeSearch": [
+    "%LOCALAPPDATA%\\Programs\\GitHub Copilot\\github.exe",
+    "%LOCALAPPDATA%\\GitHub Copilot\\github.exe",
+    "%ProgramFiles%\\GitHub Copilot\\github.exe",
+    "%ProgramFiles(x86)%\\GitHub Copilot\\github.exe",
+    "%ProgramW6432%\\GitHub Copilot\\github.exe"
+  ],
+
+  "port": 9222,
+  "lang": "zh-CN",
+  "debug": false,
+  "extraBrowserArgs": ""
+}
