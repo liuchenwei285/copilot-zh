@@ -236,6 +236,7 @@ async function main() {
     return {
       modelNotice: txt("[data-testid='model-change-notice']"),
       thought: txt("[data-testid='assistant-reasoning-toggle']"),
+      shimmer: attr(".text-shimmer-overlay-text", "data-text"),
       copyUser: attr("[data-testid='user-message-actions'] button[aria-label]", "aria-label"),
       scrollBottom: attr("button[aria-label='Scroll to bottom'], button[aria-label='滚动到底部']", "aria-label"),
       typeahead: attr("div[aria-label='Typeahead menu'], div[aria-label='联想菜单']", "aria-label"),
@@ -250,6 +251,10 @@ async function main() {
 
   if (ui.thought) ok('“Thought for Ns” 已翻译', /^思考了 /.test(ui.thought), ui.thought);
   else skip('Thought for Ns', '当前对话没有该提示');
+
+  if (ui.shimmer) ok('流式文字 shimmer 的 data-text 已翻译（不会与中文重叠）',
+    /[\u4e00-\u9fa5]/.test(ui.shimmer), ui.shimmer);
+  else skip('流式文字 shimmer', '当前页面没有该控件');
 
   if (ui.scrollBottom) eq('“Scroll to bottom” 已翻译', ui.scrollBottom, '滚动到底部');
   else skip('Scroll to bottom', '当前页面没有该按钮');

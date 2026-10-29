@@ -258,6 +258,7 @@
     "[data-tooltip]",
     "[data-placeholder]",
     "[data-title]",
+    "[data-text]",
     "[data-testid]"
   ],
 
@@ -290,6 +291,7 @@
     "alt",
     "data-tooltip",
     "data-placeholder",
-    "data-title"
+    "data-title",
+    "data-text"
   ]
 }

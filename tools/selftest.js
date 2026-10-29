@@ -331,6 +331,9 @@ async function main() {
     console.log('  -- C1. 对话区里的 UI 必须被翻译（rescope 生效） --');
     eq('Model changed to ... 被翻译', await T('#model-notice'), '模型已切换至 Kimi K3 · NVIDIA NIM');
     eq('Thought for Ns 被翻译', await T('#thought'), '思考了 7 秒');
+    eq('流式 Thinking 文本被翻译', await T('#thinking-visible'), '思考中');
+    eq('流式 Thinking 的 shimmer data-text 同步翻译（避免英文/中文重叠）',
+      await A('#thinking-shimmer', 'data-text'), '思考中');
     eq('相对时间 2h ago 被翻译', await T('#stamp'), '2 小时前');
     eq('时间戳 aria-label 被翻译', await A('#stamp', 'aria-label'), '2 小时前，已发送，显示时间戳');
     eq('Copy user message', await A('#act-copy-user', 'aria-label'), '复制用户消息');
@@ -408,10 +411,12 @@ async function main() {
     await sleep(300);
     eq('disable() 后侧栏回到英文', await T('[data-testid="nav-new"]'), 'New');
     eq('disable() 后对话区 UI 回到英文', await T('#thought'), 'Thought for 7s');
+    eq('disable() 后 shimmer data-text 回到英文', await A('#thinking-shimmer', 'data-text'), 'Thinking');
     await evalJs('window.__fixture.zhOn()');
     await sleep(500);
     eq('enable() 后侧栏恢复中文', await T('[data-testid="nav-new"]'), '新建');
     eq('enable() 后对话区 UI 恢复中文', await T('#thought'), '思考了 7 秒');
+    eq('enable() 后 shimmer data-text 恢复中文', await A('#thinking-shimmer', 'data-text'), '思考中');
 
     /* =============================== D. en-US 开关 =============================== */
     console.log('\n[D] --lang=en-US 时不注入');
