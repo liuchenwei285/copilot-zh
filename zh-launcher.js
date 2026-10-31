@@ -50,7 +50,7 @@ const crypto = require('crypto');
 const readline = require('readline');
 const { spawn } = require('child_process');
 
-const LAUNCHER_VERSION = '2.2.0';
+const LAUNCHER_VERSION = '2.3.0';
 const HERE = __dirname;
 const RUNTIME_DIR = path.join(HERE, 'runtime');
 const OUT_DIR = path.join(HERE, 'out');

@@ -37,12 +37,64 @@ GitHub Copilot Desktop 的部分界面文案目前没有被本项目覆盖。本
 
 ## 安装
 
-1. 从本项目的 GitHub 页面下载 ZIP 压缩包：在页面选择 **Code（代码）→ Download ZIP（下载 ZIP）**。
-2. 解压整个压缩包到一个你容易找到的位置。不要只复制单个脚本；启动器需要同目录下的词典和 `runtime` 文件夹。
-3. 安装 Node.js 22 或更高版本。请从 Node.js 官方网站获取安装程序：<https://nodejs.org/>。
-4. 打开 Windows 命令提示符，输入 `node -v` 并回车。应显示 `v22` 或更高的版本号。
-
 本项目不需要执行 `npm install`。
+
+### 方式一：命令行下载
+
+打开命令提示符（`cmd`）或 PowerShell，任选一条执行。
+
+**用 Git（已安装 Git 时最简单）**
+
+```bat
+git clone https://github.com/liuchenwei285/copilot-zh.git
+```
+
+**用 PowerShell 下载最新正式版（不需要 Git）**
+
+```powershell
+$ProgressPreference = 'SilentlyContinue'
+$url = (Invoke-RestMethod 'https://api.github.com/repos/liuchenwei285/copilot-zh/releases/latest').assets[0].browser_download_url
+Invoke-WebRequest $url -OutFile "$env:USERPROFILE\Downloads\copilot-zh.zip"
+Expand-Archive "$env:USERPROFILE\Downloads\copilot-zh.zip" -DestinationPath "$env:USERPROFILE\Downloads" -Force
+```
+
+**用 curl（Windows 10 1803 及以上自带 `curl.exe`）**
+
+```bat
+curl -L -o copilot-zh.zip https://github.com/liuchenwei285/copilot-zh/archive/refs/heads/main.zip
+```
+
+**用 GitHub CLI（已安装 `gh` 时）**
+
+```bat
+gh release download --repo liuchenwei285/copilot-zh --latest --pattern "*.zip"
+```
+
+### 方式二：浏览器下载 ZIP
+
+在项目的 GitHub 页面选择 **Code（代码）→ Download ZIP（下载 ZIP）**。
+
+### 解压与准备
+
+1. 解压整个压缩包到一个你容易找到的位置。不要只复制单个脚本；启动器需要同目录下的词典和 `runtime` 文件夹。
+2. 安装 Node.js 22 或更高版本。请从 Node.js 官方网站获取安装程序：<https://nodejs.org/>。
+3. 打开 Windows 命令提示符，输入 `node -v` 并回车。应显示 `v22` 或更高的版本号。
+
+### 更新汉化
+
+启动器**不会自动更新**，词典和模板只是项目目录里的普通文件。
+
+- 用 Git 装的：进入项目目录执行 `git pull`，然后重新双击 `start-copilot-zh.cmd`。
+- 用压缩包装的：重新下载并覆盖解压到同一目录，然后重新启动。
+
+确认是否真的更新了，看这两处之一，**不要看 `LAUNCHER_VERSION`**（它只代表启动器代码版本，词典扩充时不会变）：
+
+```bat
+:: 词条条数
+node -e "console.log(Object.keys(require('./zh-CN.json')).length)"
+:: 或看运行时资源指纹
+node -e "console.log(require('./out/zh-status.json').resourceVersion)"
+```
 
 ## 第一次启动
 
