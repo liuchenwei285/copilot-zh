@@ -548,6 +548,12 @@ async function main() {
       /ghMissed/.test(launcherSrc) && /Copilot 已退出，守护进程结束/.test(launcherSrc));
     ok('守护进程的等待预算比前台更宽（避免前后台同时放弃）',
       /Math\.max\(OPT\.waitSec, 300\)/.test(launcherSrc));
+    /* 前台执行 stopDaemon() 时，PID 文件里记的是守护进程的 PID，永远不等于 process.pid；
+       旧的 removePidFile() 只在 pid 相等时才删，于是陈旧记录留了下来，
+       下一次启动的守护进程看到它就以为自己多余、直接退出 → 汉化失效。 */
+    ok('stopDaemon 强制清理 PID 文件（否则会留下陈旧记录卡死后续启动）',
+      /removePidFile\(true\)/.test(launcherSrc));
+    ok('removePidFile 支持 force 参数', /function removePidFile\(force\)/.test(launcherSrc));
 
     /* 跑一次启动器子进程，收集 stdout/stderr/退出码。
        用异步 spawn（本机 spawnSync 不可用）。 */
@@ -584,6 +590,19 @@ async function main() {
     ok('写入后能读回自己的 PID', rd && rd.pid === process.pid, JSON.stringify(rd));
     ok('isPidAlive 认得活进程', (await L.isPidAlive(process.pid)) === true);
     ok('isPidAlive 判定不存在的 PID 为已死', (await L.isPidAlive(999999)) === false);
+
+    /* Windows 会复用 PID。真实踩到过：守护进程早已退出，它的 PID 被一个无关程序
+       接手（实测是 SenaryAdvancedFeaturesApp），于是
+         · 每个新守护进程一启动就以为自己多余、立刻退出 → 汉化再也注入不进来；
+         · stopDaemon 还会去 taskkill 那个无关进程 → 误杀别人的程序。
+       所以存活判定必须确认这个 PID 现在确实是 node.exe。 */
+    ok('isPidAlive 会校验映像名，不把非 node 进程当成守护进程',
+      (await L.isPidAlive(4)) === false, 'PID 4 = System，必须是 false');
+    fs.writeFileSync(L.PID_FILE, JSON.stringify({ pid: 4, startedAt: new Date().toISOString(), port: 9222 }, null, 2));
+    const reused = await L.readPidFile();
+    ok('PID 被非 node 进程复用时 readPidFile 视为已死', reused === null, JSON.stringify(reused));
+    ok('并顺手清掉了那个陈旧 PID 文件（否则会永久卡死）', !fs.existsSync(L.PID_FILE));
+
     L.removePidFile();
     ok('removePidFile 清掉了文件', !fs.existsSync(L.PID_FILE));
     const stale = await L.readPidFile();
@@ -649,6 +668,33 @@ async function main() {
     });
     ok('全部项目 .cmd 都使用 CRLF（LF-only 会令 CMD 执行乱码注释）', allCmdCrlf,
       cmdFiles.join(', '));
+
+    /* cmd.exe 在 "chcp 65001" 下解析含多字节字符的批处理会错位：
+       它会丢掉与字符数不符的字节，把注释/echo 的片段当成命令执行，报出
+         'xxx' is not recognized as an internal or external command
+       而且错位位置随文件长度漂移（实测同一份内容，21 行时 0 个错、44 行时 9 个错）。
+       UTF-8+BOM / GBK / chcp 936 都不能稳定解决，唯一确定性做法是 .cmd 保持纯 ASCII。
+       中文提示改由 tools\messages\*.txt（UTF-8）配合 type 输出 —— 这条路已验证安全。 */
+    const asciiCheck = cmdFiles.map((f) => {
+      const txt = fs.readFileSync(path.join(ROOT, f), 'utf8');
+      return [f, [...txt].filter((c) => c.charCodeAt(0) > 127).length];
+    });
+    ok('全部项目 .cmd 都是纯 ASCII（chcp 65001 下多字节字符会让 cmd 解析错位）',
+      asciiCheck.every(([, n]) => n === 0),
+      asciiCheck.filter(([, n]) => n > 0).map(([f, n]) => f + '=' + n).join(', ') || 'ok');
+
+    const msgDir = path.join(ROOT, 'tools', 'messages');
+    ok('中文控制台提示放在 tools/messages/ 下的 UTF-8 文本里',
+      fs.existsSync(path.join(msgDir, 'node-missing.txt')));
+    const nodeMissingTxt = fs.readFileSync(path.join(msgDir, 'node-missing.txt'));
+    ok('node-missing.txt 是 UTF-8 且不带 BOM（type 输出时不会多一个字符）',
+      !(nodeMissingTxt[0] === 0xEF && nodeMissingTxt[1] === 0xBB && nodeMissingTxt[2] === 0xBF));
+    ok('node-missing.txt 里确实是中文提示',
+      nodeMissingTxt.toString('utf8').includes('未找到 Node.js'));
+    const referrers = cmdFiles.filter((f) =>
+      fs.readFileSync(path.join(ROOT, f), 'utf8').includes('tools\\messages\\node-missing.txt'));
+    ok('找不到 Node 的 .cmd 都用 type 打印该文本而不是 echo 中文',
+      referrers.length >= 4, referrers.join(', '));
 
     const zhOff = fs.readFileSync(path.join(ROOT, 'zh-off.cmd'), 'utf8');
     ok('zh-off.cmd 在 LOCALAPPDATA 不同步时按当前用户名跨盘查找',

@@ -36,14 +36,8 @@ function Find-Node {
     (Join-Path $env:ProgramFiles 'nodejs\node.exe'),
     (Join-Path ${env:ProgramFiles(x86)} 'nodejs\node.exe'),
     (Join-Path $env:LOCALAPPDATA 'Programs\nodejs\node.exe'),
-    (Join-Path $env:APPDATA 'npm\node.exe'),
-    (Join-Path $env:USERPROFILE '.workbuddy-ai\binaries\node\versions\22.22.2-3\node.exe')
+    (Join-Path $env:APPDATA 'npm\node.exe')
   )
-  $verDir = Join-Path $env:USERPROFILE '.workbuddy-ai\binaries\node\versions'
-  if (Test-Path -LiteralPath $verDir) {
-    Get-ChildItem -LiteralPath $verDir -Directory -ErrorAction SilentlyContinue |
-      ForEach-Object { $cands += (Join-Path $_.FullName 'node.exe') }
-  }
   foreach ($c in $cands) {
     if ($c -and (Test-Path -LiteralPath $c)) { return $c }
   }

@@ -4,59 +4,62 @@ chcp 65001 >nul 2>nul
 cd /d "%~dp0"
 
 rem ============================================================
-rem  GitHub Copilot（中文）—— 一键启动
+rem  GitHub Copilot (Chinese) -- one-click launcher
 rem
-rem  双击本文件即可。它会：
-rem    1. 检测 Copilot 是否已在运行（在运行就不再启动第二个）
-rem    2. 需要时设置进程级环境变量 WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS
-rem    3. 启动官方 github.exe（绝不修改官方安装目录里的任何文件）
-rem    4. 等待 CDP 就绪 → 注入汉化 → 起一个无窗口守护进程
-rem    5. 确认注入成功后【本窗口自动关闭】，汉化由守护进程维持
+rem  Just double-click this file. It will:
+rem    1. Check whether Copilot is already running (never start a 2nd one)
+rem    2. Set the per-process env var WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS
+rem    3. Start the official github.exe (never touches its install folder)
+rem    4. Wait for CDP -> inject the Chinese runtime -> start a windowless daemon
+rem    5. Close this window once injection is confirmed; the daemon keeps it alive
 rem
-rem  参数（可选，双击时不用管）：
-rem    -k            结束后保留窗口（排查问题用）
-rem    --restart     已在运行但没开调试端口时，自动关掉再重启
-rem    --lang=en-US  临时以英文启动
+rem  Optional arguments (not needed when double-clicking):
+rem    -k            keep this window open when done (troubleshooting)
+rem    --restart     Copilot is running without a debug port -> restart it
+rem    --lang=en-US  start in English (translation disabled)
+rem
+rem  ------------------------------------------------------------
+rem  KEEP THIS FILE PURE ASCII -- do not add Chinese text here.
+rem  cmd.exe mis-parses a batch file that mixes "chcp 65001" with
+rem  multi-byte characters: it loses sync and turns comment text into
+rem  bogus commands ("'xxx' is not recognized as an internal or
+rem  external command"). Verified on Windows 11 / cmd 10.0.
+rem  Chinese console messages are printed with "type" from the UTF-8
+rem  files in tools\messages\ instead -- that path is safe.
+rem  ------------------------------------------------------------
 rem ============================================================
 
 set "KEEP="
 if /i "%~1"=="-k" set "KEEP=1"
 
-rem ---- 找 Node.js ----
+rem ---- locate Node.js ----
 set "NODE="
 for %%I in (node.exe) do if not "%%~$PATH:I"=="" set "NODE=%%~$PATH:I"
 if not defined NODE if exist "%ProgramFiles%\nodejs\node.exe" set "NODE=%ProgramFiles%\nodejs\node.exe"
 if not defined NODE if exist "%ProgramFiles(x86)%\nodejs\node.exe" set "NODE=%ProgramFiles(x86)%\nodejs\node.exe"
 if not defined NODE if exist "%LOCALAPPDATA%\Programs\nodejs\node.exe" set "NODE=%LOCALAPPDATA%\Programs\nodejs\node.exe"
 if not defined NODE if exist "%APPDATA%\npm\node.exe" set "NODE=%APPDATA%\npm\node.exe"
-if not defined NODE if exist "%USERPROFILE%\.workbuddy-ai\binaries\node\versions\22.22.2-3\node.exe" set "NODE=%USERPROFILE%\.workbuddy-ai\binaries\node\versions\22.22.2-3\node.exe"
-if not defined NODE (
-  for /d %%D in ("%USERPROFILE%\.workbuddy-ai\binaries\node\versions\*") do (
-    if exist "%%~fD\node.exe" if not defined NODE set "NODE=%%~fD\node.exe"
-  )
-)
 
 if not defined NODE (
-  echo.
-  echo [错误] 未找到 Node.js。
-  echo        汉化启动器需要 Node.js 22 或更高版本。
-  echo        下载： https://nodejs.org/   （装 LTS 版，一路下一步即可）
+  type "%~dp0tools\messages\node-missing.txt"
   echo.
   pause
   exit /b 1
 )
 
-rem ---- 交给 Node 处理 ----
+rem ---- hand over to Node ----
 set "RC=0"
 "%NODE%" "%~dp0zh-launcher.js" --start %*
 set "RC=%ERRORLEVEL%"
 
 if not "%RC%"=="0" (
   echo.
-  echo [提示] 启动未成功（退出码 %RC%）。
-  echo        详细日志： %~dp0out\zh-daemon.log
-  echo        常见原因：Copilot 已在运行但没有调试端口 —— 加参数 --restart 重试，
-  echo                  或手动完全退出 Copilot（含托盘）后再双击本文件。
+  echo   [ERROR] Launcher did not succeed ^(exit code %RC%^).
+  echo           Full log : out\zh-daemon.log
+  echo           If Copilot is already running without a debug port, retry:
+  echo             start-copilot-zh.cmd --restart
+  echo           Otherwise fully quit Copilot ^(including the tray icon^) and
+  echo           double-click this file again.
   echo.
   pause
   exit /b %RC%

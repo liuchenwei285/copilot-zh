@@ -11,6 +11,11 @@
 *.swo
 *~
 
+# Local packaging artifacts (stale snapshots of the repo; rebuild instead of committing)
+*.zip
+*.7z
+*.tar.gz
+
 # Common local tooling output
 node_modules/
 .cache/

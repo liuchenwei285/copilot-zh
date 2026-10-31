@@ -1,0 +1,3 @@
+  [错误] 未找到 Node.js。
+         汉化启动器需要 Node.js 22 或更高版本。
+         下载： https://nodejs.org/   （装 LTS 版，一路下一步即可）

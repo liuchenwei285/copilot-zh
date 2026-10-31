@@ -429,10 +429,17 @@ async function killGithub() {
   return left.length === 0;
 }
 
+/* Windows 会复用 PID：一个早已退出的守护进程，它的 PID 可能被任意无关程序接手。
+   只判断「这个 PID 存在」会把它当成还活着的守护进程，后果有两个：
+     1. 新守护进程一启动就以为自己多余，立刻退出 → 汉化永远注入不进来（实测卡死）；
+     2. stopDaemon 会去 taskkill 那个无关进程 → 误杀别人的程序。
+   所以除了 PID 存在，还必须确认它现在确实是 node.exe。 */
 async function isPidAlive(pid) {
   if (!pid) return false;
-  const r = await runAsync('tasklist', ['/FI', 'PID eq ' + pid, '/NH'], 8000);
-  return new RegExp('\\b' + pid + '\\b').test(r.out || '');
+  const r = await runAsync('tasklist', ['/FI', 'PID eq ' + pid, '/NH', '/FO', 'CSV'], 8000);
+  const out = r.out || '';
+  if (!new RegExp('(^|[^0-9])' + pid + '([^0-9]|$)').test(out)) return false;
+  return /node\.exe/i.test(out);
 }
 
 async function readPidFile() {
@@ -456,10 +463,13 @@ function writePidFile(extra) {
   } catch (e) { /* noop */ }
 }
 
-function removePidFile() {
+/* force=true 时允许删掉「不属于本进程」的 PID 文件 ——
+   前台执行 stopDaemon() 时文件里记的是守护进程的 PID，永远不等于 process.pid，
+   不加 force 就会留下陈旧记录，下一次启动的守护进程会误以为有人占位而直接退出。 */
+function removePidFile(force) {
   try {
     const o = readJsonSafe(PID_FILE, null);
-    if (!o || o.pid === process.pid) fs.unlinkSync(PID_FILE);
+    if (force || !o || o.pid === process.pid) fs.unlinkSync(PID_FILE);
   } catch (e) { /* noop */ }
 }
 
@@ -476,7 +486,7 @@ async function stopDaemon(quiet) {
   }
   await killPid(cur.pid);
   await sleep(600);
-  removePidFile();
+  removePidFile(true);
   if (!quiet) ok('已停止后台守护进程（PID ' + cur.pid + '）。');
   return true;
 }

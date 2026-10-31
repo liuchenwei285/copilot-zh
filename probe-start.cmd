@@ -4,27 +4,29 @@ chcp 65001 >nul 2>nul
 cd /d "%~dp0"
 
 echo ============================================================
-echo  以「开启 CDP」的方式启动 GitHub Copilot Desktop
+echo  Start GitHub Copilot Desktop with CDP enabled
 echo ------------------------------------------------------------
-echo  本脚本只设置一个进程级环境变量并启动官方程序：
+echo  This script only sets ONE per-process environment variable
+echo  and then starts the official executable:
 echo    WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222 ...
-echo  它不会写入、不会修改官方安装目录里的任何文件，
-echo  关闭 Copilot 后该变量即失效。
+echo  It never writes to or modifies any file inside the official
+echo  install folder. The variable disappears when Copilot exits.
 echo ============================================================
 echo.
 
-rem ---------- 端口（可用第一个参数覆盖：probe-start.cmd 9333）----------
+rem ---------- port (override with the 1st argument: probe-start.cmd 9333) ----------
 set "PORT=%~1"
 if "%PORT%"=="" set "PORT=9222"
 
-rem ---------- 找官方 github.exe ----------
+rem ---------- locate the official github.exe ----------
 set "APP="
 if exist "%LOCALAPPDATA%\Programs\GitHub Copilot\github.exe" set "APP=%LOCALAPPDATA%\Programs\GitHub Copilot\github.exe"
 if not defined APP if exist "%ProgramFiles%\GitHub Copilot\github.exe" set "APP=%ProgramFiles%\GitHub Copilot\github.exe"
 if not defined APP if exist "%ProgramFiles(x86)%\GitHub Copilot\github.exe" set "APP=%ProgramFiles(x86)%\GitHub Copilot\github.exe"
 if not defined APP if exist "%LOCALAPPDATA%\GitHub Copilot\github.exe" set "APP=%LOCALAPPDATA%\GitHub Copilot\github.exe"
 
-rem AppData 可能被重定向；按当前用户名跨盘兜底（不写死具体用户名或盘符）。
+rem AppData may be redirected; fall back to scanning every drive using the
+rem CURRENT user name only (never hard-code a user name or a drive letter).
 if not defined APP (
   for %%D in (C D E F G H I J) do (
     if not defined APP if exist "%%D:\Users\%USERNAME%\AppData\Local\Programs\GitHub Copilot\github.exe" set "APP=%%D:\Users\%USERNAME%\AppData\Local\Programs\GitHub Copilot\github.exe"
@@ -32,7 +34,7 @@ if not defined APP (
   )
 )
 
-rem 兜底：在 %LOCALAPPDATA%\Programs 下扫一层
+rem last resort: scan one level under %LOCALAPPDATA%\Programs
 if not defined APP (
   for /d %%D in ("%LOCALAPPDATA%\Programs\*") do (
     if exist "%%~fD\github.exe" if exist "%%~fD\app-extensions" set "APP=%%~fD\github.exe"
@@ -40,31 +42,32 @@ if not defined APP (
 )
 
 if not defined APP (
-  echo [错误] 未找到 GitHub Copilot Desktop 的 github.exe
+  echo   [ERROR] github.exe for GitHub Copilot Desktop was not found.
   echo.
-  echo        已尝试：
-  echo          %%LOCALAPPDATA%%\Programs\GitHub Copilot\github.exe
-  echo          %%ProgramFiles%%\GitHub Copilot\github.exe
+  echo           Tried:
+  echo             %%LOCALAPPDATA%%\Programs\GitHub Copilot\github.exe
+  echo             %%ProgramFiles%%\GitHub Copilot\github.exe
   echo.
-  echo        请手动执行（把路径换成你的实际路径）：
-  echo          set WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=%PORT% --remote-allow-origins=*
-  echo          start "" "%LOCALAPPDATA%\Programs\GitHub Copilot\github.exe"
+  echo           Run this by hand instead -- replace the path with yours:
+  echo             set WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=%PORT% --remote-allow-origins=*
+  echo             start "" "%LOCALAPPDATA%\Programs\GitHub Copilot\github.exe"
   echo.
   pause
   exit /b 1
 )
 
-echo 应用路径 : %APP%
-echo CDP 端口 : %PORT%
+echo App path  : %APP%
+echo CDP port  : %PORT%
 echo.
 
-rem ---------- 先确认没有已在运行的实例 ----------
+rem ---------- make sure no instance is already running ----------
 tasklist /FI "IMAGENAME eq github.exe" 2>nul | find /I "github.exe" >nul
 if not errorlevel 1 (
-  echo [注意] 检测到 github.exe 已在运行。
-  echo        Copilot 是单实例应用，新进程会把请求转交给已有实例后退出，
-  echo        那样 CDP 端口不会生效。
-  echo        请先【完全退出】Copilot，再重新运行本脚本。
+  echo   [WARN] github.exe is already running.
+  echo          Copilot is a single-instance app: a new process just hands the
+  echo          request to the running instance and exits, so the CDP port
+  echo          would never take effect.
+  echo          Fully QUIT Copilot first, then run this script again.
   echo.
   pause
   exit /b 1
@@ -73,10 +76,10 @@ if not errorlevel 1 (
 set "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=%PORT% --remote-allow-origins=*"
 start "" "%APP%"
 
-echo 已启动。等待 6 秒让窗口就绪 ...
+echo Started. Waiting 6 seconds for the window to become ready ...
 timeout /t 6 /nobreak >nul
 
 echo.
-echo 下一步：双击 probe.cmd（或在本目录执行 node probe.js）
+echo Next: double-click probe.cmd, or run "node probe.js" in this folder
 echo.
 pause
