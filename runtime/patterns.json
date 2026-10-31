@@ -18,48 +18,158 @@
     "",
     "所有模板都必须保证：不修改捕获到的动态变量本身。"
   ],
-
   "guards": [
     "^(?:Copilot|You) said:",
     "^https?://",
     "^www\\.",
     "^Model '.+' not found",
     "^·\\s",
-    "^[\\s\\S]{160,}$"
+    "^[\\s\\S]{600,}$"
   ],
-
   "patterns": [
-    { "re": "^(\\d+)\\s+files?$", "zh": "{1} 个文件" },
-    { "re": "^(\\d+)\\s+folders?$", "zh": "{1} 个文件夹" },
-    { "re": "^(\\d+)\\s+directories$", "zh": "{1} 个目录" },
-    { "re": "^(\\d+)\\s+results?$", "zh": "{1} 个结果" },
-    { "re": "^(\\d+)\\s+matches?$", "zh": "{1} 个匹配" },
-    { "re": "^(\\d+)\\s+changes?$", "zh": "{1} 处更改" },
-    { "re": "^(\\d+)\\s+commits?$", "zh": "{1} 个提交" },
-    { "re": "^(\\d+)\\s+branches?$", "zh": "{1} 个分支" },
-    { "re": "^(\\d+)\\s+comments?$", "zh": "{1} 条评论" },
-    { "re": "^(\\d+)\\s+reviews?$", "zh": "{1} 条评审" },
-    { "re": "^(\\d+)\\s+selected$", "zh": "已选择 {1} 项" },
-    { "re": "^(\\d+)\\s+items?$", "zh": "{1} 项" },
-    { "re": "^(\\d+)\\s+of\\s+(\\d+)$", "zh": "{1} / {2}" },
-    { "re": "^(\\d+)\\s+more$", "zh": "还有 {1} 个" },
-    { "re": "^(\\d+)% used$", "zh": "已用 {1}%" },
-    { "re": "^Show (\\d+) more$", "zh": "再显示 {1} 个" },
-    { "re": "^Show (\\d+) of (\\d+)$", "zh": "显示 {2} 项中的 {1} 项" },
-
-    { "re": "^(\\d+)\\s+min(?:ute)?s?\\s+ago$", "zh": "{1} 分钟前" },
-    { "re": "^(\\d+)\\s+hours?\\s+ago$", "zh": "{1} 小时前" },
-    { "re": "^(\\d+)\\s+days?\\s+ago$", "zh": "{1} 天前" },
-    { "re": "^Updated (\\d+)\\s+min(?:ute)?s?\\s+ago$", "zh": "{1} 分钟前更新" },
-    { "re": "^Updated (\\d+)\\s+hours?\\s+ago$", "zh": "{1} 小时前更新" },
-    { "re": "^Updated (\\d+)\\s+days?\\s+ago$", "zh": "{1} 天前更新" },
-    { "re": "^(\\d+)h ago$", "zh": "{1} 小时前" },
-    { "re": "^(\\d+)m ago$", "zh": "{1} 分钟前" },
-    { "re": "^(\\d+)d ago$", "zh": "{1} 天前" },
-
-    { "re": "^Thought for (\\d+)s$", "zh": "思考了 {1} 秒", "where": "text" },
-    { "re": "^Thought for (\\d+)m\\s*(\\d+)s$", "zh": "思考了 {1} 分 {2} 秒", "where": "text" },
-    { "re": "^Thought for (\\d+)m$", "zh": "思考了 {1} 分钟", "where": "text" },
+    {
+      "re": "^(\\d+)\\s+files?$",
+      "zh": "{1} 个文件"
+    },
+    {
+      "re": "^(\\d+)\\s+folders?$",
+      "zh": "{1} 个文件夹"
+    },
+    {
+      "re": "^(\\d+)\\s+directories$",
+      "zh": "{1} 个目录"
+    },
+    {
+      "re": "^(\\d+)\\s+results?$",
+      "zh": "{1} 个结果"
+    },
+    {
+      "re": "^(\\d+)\\s+matches?$",
+      "zh": "{1} 个匹配"
+    },
+    {
+      "re": "^(\\d+)\\s+changes?$",
+      "zh": "{1} 处更改"
+    },
+    {
+      "re": "^(\\d+)\\s+commits?$",
+      "zh": "{1} 个提交"
+    },
+    {
+      "re": "^(\\d+)\\s+branches?$",
+      "zh": "{1} 个分支"
+    },
+    {
+      "re": "^(\\d+)\\s+comments?$",
+      "zh": "{1} 条评论"
+    },
+    {
+      "re": "^(\\d+)\\s+reviews?$",
+      "zh": "{1} 条评审"
+    },
+    {
+      "re": "^(\\d+)\\s+selected$",
+      "zh": "已选择 {1} 项"
+    },
+    {
+      "re": "^(\\d+)\\s+items?$",
+      "zh": "{1} 项"
+    },
+    {
+      "re": "^(\\d+)\\s+of\\s+(\\d+)$",
+      "zh": "{1} / {2}"
+    },
+    {
+      "re": "^(\\d+)\\s+more$",
+      "zh": "还有 {1} 个"
+    },
+    {
+      "re": "^(\\d+)% used$",
+      "zh": "已用 {1}%"
+    },
+    {
+      "re": "^Show (\\d+) more$",
+      "zh": "再显示 {1} 个"
+    },
+    {
+      "re": "^Show (\\d+) of (\\d+)$",
+      "zh": "显示 {2} 项中的 {1} 项"
+    },
+    {
+      "re": "^(\\d+)\\s+min(?:ute)?s?\\s+ago$",
+      "zh": "{1} 分钟前"
+    },
+    {
+      "re": "^(\\d+)\\s+hours?\\s+ago$",
+      "zh": "{1} 小时前"
+    },
+    {
+      "re": "^(\\d+)\\s+days?\\s+ago$",
+      "zh": "{1} 天前"
+    },
+    {
+      "re": "^Updated (\\d+)\\s+min(?:ute)?s?\\s+ago$",
+      "zh": "{1} 分钟前更新"
+    },
+    {
+      "re": "^Updated (\\d+)\\s+hours?\\s+ago$",
+      "zh": "{1} 小时前更新"
+    },
+    {
+      "re": "^Updated (\\d+)\\s+days?\\s+ago$",
+      "zh": "{1} 天前更新"
+    },
+    {
+      "re": "^(\\d+)h ago$",
+      "zh": "{1} 小时前"
+    },
+    {
+      "re": "^(\\d+)m ago$",
+      "zh": "{1} 分钟前"
+    },
+    {
+      "re": "^(\\d+)d ago$",
+      "zh": "{1} 天前"
+    },
+    {
+      "re": "^Thought for (\\d+)s$",
+      "zh": "思考了 {1} 秒",
+      "where": "text"
+    },
+    {
+      "re": "^Thought for (\\d+)m\\s*(\\d+)s$",
+      "zh": "思考了 {1} 分 {2} 秒",
+      "where": "text"
+    },
+    {
+      "re": "^Thought for (\\d+)m$",
+      "zh": "思考了 {1} 分钟",
+      "where": "text"
+    },
+    {
+      "re": "^(\\d+) seconds?$",
+      "zh": "{1} 秒"
+    },
+    {
+      "re": "^(\\d+) minutes?$",
+      "zh": "{1} 分钟"
+    },
+    {
+      "re": "^(\\d+) hours?$",
+      "zh": "{1} 小时"
+    },
+    {
+      "re": "^(\\d+) days?$",
+      "zh": "{1} 天"
+    },
+    {
+      "re": "^Last (\\d+) days?$",
+      "zh": "最近 {1} 天"
+    },
+    {
+      "re": "^(\\d+) shortcuts? found$",
+      "zh": "找到 {1} 个快捷键"
+    },
     {
       "re": "^Model changed to (.+)$",
       "zh": "模型已切换至 {1}",
@@ -67,38 +177,232 @@
       "allowFreeText": true,
       "note": "出现在 model-change-notice-disclosure 按钮内（rescope 放行），前缀为固定字面量，且该区域已被 skipText 整块保护"
     },
-
-    { "re": "^(.+)\\. Status: Idle\\.$", "zh": "{1}。状态：空闲。", "where": "attr" },
-    { "re": "^(.+)\\. Status: Working\\.$", "zh": "{1}。状态：处理中。", "where": "attr" },
-    { "re": "^(.+)\\. Status: Queued\\.$", "zh": "{1}。状态：排队中。", "where": "attr" },
-    { "re": "^(.+)\\. Status: Failed\\.$", "zh": "{1}。状态：失败。", "where": "attr" },
-    { "re": "^(.+)\\. Status: Cancelled\\.$", "zh": "{1}。状态：已取消。", "where": "attr" },
-    { "re": "^(.+)\\. Status: Completed\\.$", "zh": "{1}。状态：已完成。", "where": "attr" },
-    { "re": "^(.+)\\. Status: (.+)\\.$", "zh": "{1}。状态：{2}。", "where": "attr" },
-
-    { "re": "^(.+), open user menu$", "zh": "{1}，打开用户菜单", "where": "attr" },
-    { "re": "^(.+), session options$", "zh": "{1} 的会话选项", "where": "attr" },
-    { "re": "^(.+), model and reasoning$", "zh": "{1}，模型与推理", "where": "attr" },
-    { "re": "^(.+), view details$", "zh": "查看 {1} 详情", "where": "attr" },
-    { "re": "^Actions for (.+)$", "zh": "{1} 的操作", "where": "attr" },
-    { "re": "^Add server: (.+)$", "zh": "添加服务器：{1}", "where": "attr" },
-    { "re": "^Install skill: (.+)$", "zh": "安装技能：{1}", "where": "attr" },
-    { "re": "^Enable skill: (.+)$", "zh": "启用技能：{1}", "where": "attr" },
-    { "re": "^Install: (.+)$", "zh": "安装：{1}", "where": "attr" },
-    { "re": "^Enable: (.+)$", "zh": "启用：{1}", "where": "attr" },
-    { "re": "^Project: (.+)$", "zh": "项目：{1}", "where": "attr" },
+    {
+      "re": "^(.+)\\. Status: Idle\\.$",
+      "zh": "{1}。状态：空闲。",
+      "where": "attr"
+    },
+    {
+      "re": "^(.+)\\. Status: Working\\.$",
+      "zh": "{1}。状态：处理中。",
+      "where": "attr"
+    },
+    {
+      "re": "^(.+)\\. Status: Queued\\.$",
+      "zh": "{1}。状态：排队中。",
+      "where": "attr"
+    },
+    {
+      "re": "^(.+)\\. Status: Failed\\.$",
+      "zh": "{1}。状态：失败。",
+      "where": "attr"
+    },
+    {
+      "re": "^(.+)\\. Status: Cancelled\\.$",
+      "zh": "{1}。状态：已取消。",
+      "where": "attr"
+    },
+    {
+      "re": "^(.+)\\. Status: Completed\\.$",
+      "zh": "{1}。状态：已完成。",
+      "where": "attr"
+    },
+    {
+      "re": "^(.+)\\. Status: (.+)\\.$",
+      "zh": "{1}。状态：{2}。",
+      "where": "attr"
+    },
+    {
+      "re": "^(.+), open user menu$",
+      "zh": "{1}，打开用户菜单",
+      "where": "attr"
+    },
+    {
+      "re": "^(.+), session options$",
+      "zh": "{1} 的会话选项",
+      "where": "attr"
+    },
+    {
+      "re": "^(.+), model and reasoning$",
+      "zh": "{1}，模型与推理",
+      "where": "attr"
+    },
+    {
+      "re": "^(.+), view details$",
+      "zh": "查看 {1} 详情",
+      "where": "attr"
+    },
+    {
+      "re": "^Actions for (.+)$",
+      "zh": "{1} 的操作",
+      "where": "attr"
+    },
+    {
+      "re": "^Add server: (.+)$",
+      "zh": "添加服务器：{1}",
+      "where": "attr"
+    },
+    {
+      "re": "^Install skill: (.+)$",
+      "zh": "安装技能：{1}",
+      "where": "attr"
+    },
+    {
+      "re": "^Enable skill: (.+)$",
+      "zh": "启用技能：{1}",
+      "where": "attr"
+    },
+    {
+      "re": "^Install: (.+)$",
+      "zh": "安装：{1}",
+      "where": "attr"
+    },
+    {
+      "re": "^Enable: (.+)$",
+      "zh": "启用：{1}",
+      "where": "attr"
+    },
+    {
+      "re": "^Project: (.+)$",
+      "zh": "项目：{1}",
+      "where": "attr"
+    },
     {
       "re": "^Session: (.+)$",
       "zh": "会话：{1}",
       "allowFreeText": true,
       "note": "出现在 header 的 h1.sr-only（“Session: <会话标题>”），捕获到的是用户自己的会话标题，原样保留"
     },
-    { "re": "^Chat messages quota: (\\d+)% used$", "zh": "聊天消息配额：已用 {1}%", "where": "attr" },
-    { "re": "^Continue as @(.+), Control \\+ Enter$", "zh": "以 @{1} 继续，Control + Enter", "where": "attr" },
-    { "re": "^Continue as @(.+)$", "zh": "以 @{1} 继续", "where": "attr" },
-    { "re": "^(\\d+)\\s+hours?\\s+ago, Sent, show timestamp$", "zh": "{1} 小时前，已发送，显示时间戳", "where": "attr" },
-    { "re": "^(\\d+)\\s+hours?\\s+ago, Response sent, show timestamp$", "zh": "{1} 小时前，回复已发送，显示时间戳", "where": "attr" },
-    { "re": "^(\\d+)\\s+min(?:ute)?s?\\s+ago, Sent, show timestamp$", "zh": "{1} 分钟前，已发送，显示时间戳", "where": "attr" },
-    { "re": "^(\\d+)\\s+min(?:ute)?s?\\s+ago, Response sent, show timestamp$", "zh": "{1} 分钟前，回复已发送，显示时间戳", "where": "attr" }
+    {
+      "re": "^Chat messages quota: (\\d+)% used$",
+      "zh": "聊天消息配额：已用 {1}%",
+      "where": "attr"
+    },
+    {
+      "re": "^Continue as @(.+), Control \\+ Enter$",
+      "zh": "以 @{1} 继续，Control + Enter",
+      "where": "attr"
+    },
+    {
+      "re": "^Continue as @(.+)$",
+      "zh": "以 @{1} 继续",
+      "where": "attr"
+    },
+    {
+      "re": "^(\\d+)\\s+hours?\\s+ago, Sent, show timestamp$",
+      "zh": "{1} 小时前，已发送，显示时间戳",
+      "where": "attr"
+    },
+    {
+      "re": "^(\\d+)\\s+hours?\\s+ago, Response sent, show timestamp$",
+      "zh": "{1} 小时前，回复已发送，显示时间戳",
+      "where": "attr"
+    },
+    {
+      "re": "^(\\d+)\\s+min(?:ute)?s?\\s+ago, Sent, show timestamp$",
+      "zh": "{1} 分钟前，已发送，显示时间戳",
+      "where": "attr"
+    },
+    {
+      "re": "^(\\d+)\\s+min(?:ute)?s?\\s+ago, Response sent, show timestamp$",
+      "zh": "{1} 分钟前，回复已发送，显示时间戳",
+      "where": "attr"
+    },
+    {
+      "re": "^Models \\((\\d+)\\)$",
+      "zh": "模型（{1}）",
+      "where": "text"
+    },
+    {
+      "re": "^Model provider status checked: (\\d+) connected\\.$",
+      "zh": "模型提供方状态检查完成：{1} 个已连接。",
+      "where": "text"
+    },
+    {
+      "re": "^Downloading update — (\\d+) MB of (\\d+) MB \\((\\d+)%\\)$",
+      "zh": "正在下载更新 — 第 {1} MB / 共 {2} MB（{3}%）",
+      "where": "text"
+    },
+    {
+      "re": "^Downloading (\\d+)%$",
+      "zh": "正在下载 {1}%",
+      "where": "text"
+    },
+    {
+      "re": "^Search (\\d+) palettes…$",
+      "zh": "搜索 {1} 个配色方案…",
+      "where": "text"
+    },
+    {
+      "re": "^Search (\\d+) skills…$",
+      "zh": "搜索 {1} 个技能…",
+      "where": "text"
+    },
+    {
+      "re": "^Up to date\\. Last checked on (.+)\\.$",
+      "zh": "已是最新版本。上次检查时间：{1}。",
+      "where": "text",
+      "allowFreeText": true,
+      "note": "更新状态行：整句以固定字面量 \"Up to date. Last checked on \" 锚定，只可能出现在设置页状态区，不会命中用户正文。"
+    },
+    {
+      "re": "^Restart to finish installing (.+)$",
+      "zh": "重启以完成 {1} 的安装",
+      "where": "text",
+      "allowFreeText": true,
+      "note": "重启安装提示浮窗，字面量前缀固定，捕获的只是版本号"
+    },
+    {
+      "re": "^Remove (.+)$",
+      "zh": "移除 {1}",
+      "where": "attr"
+    },
+    {
+      "re": "^Edit (.+)$",
+      "zh": "编辑 {1}",
+      "where": "attr"
+    },
+    {
+      "re": "^Connect, (.+)$",
+      "zh": "连接，{1}",
+      "where": "attr"
+    },
+    {
+      "re": "^Connected, (.+)$",
+      "zh": "已连接，{1}",
+      "where": "attr"
+    },
+    {
+      "re": "^Testing connection, (.+)$",
+      "zh": "正在测试连接，{1}",
+      "where": "attr"
+    },
+    {
+      "re": "^Skill actions for (.+)$",
+      "zh": "{1} 的技能操作",
+      "where": "attr"
+    },
+    {
+      "re": "^Open in new session: (.+)$",
+      "zh": "在新会话中打开：{1}",
+      "where": "attr"
+    },
+    {
+      "re": "^Provided by the GitHub account (.+) on github\\.com\\.$",
+      "zh": "由 github.com 上的 GitHub 账户 {1} 提供。",
+      "where": "text",
+      "allowFreeText": true,
+      "note": "模型提供方卡片副标题：字面量前后缀固定，捕获组只会是 GitHub 账户名，不会命中用户正文。"
+    },
+    {
+      "re": "^Chat messages quota: ([\\d<]+%) used, (.+)$",
+      "zh": "聊天消息配额：已使用 {1}，{2}",
+      "where": "attr"
+    },
+    {
+      "re": "^Chat messages quota: ([\\d<]+%) used$",
+      "zh": "聊天消息配额：已使用 {1}",
+      "where": "attr"
+    }
   ]
 }
